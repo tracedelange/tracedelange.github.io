@@ -22,12 +22,11 @@ baseurl: "" # the subpath of your site, e.g. /blog
 url: http://tracedelange.github.io
 # twitter_username: jekyllrb
 github_username:  tracedelange
-facebook_username:  
-linkedin_username:  
+linkedin_username:  tracedelange
 repository: tracedelange/tracedelange.github.io
 permalink: /:year-:month-:day-:title
 google_analytics: 
-logo: "http://tracedelange.github.io/assets/logo.png"
+logo: "/assets/logo.png"
 
 
 
