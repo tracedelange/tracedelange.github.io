@@ -28,6 +28,8 @@ permalink: /:year-:month-:day-:title
 google_analytics: 
 logo: "/assets/logo.png"
 
+future: false
+
 
 
 # Build settings
