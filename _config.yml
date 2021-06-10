@@ -22,7 +22,7 @@ baseurl: "" # the subpath of your site, e.g. /blog
 url: http://tracedelange.github.io
 # twitter_username: jekyllrb
 github_username:  tracedelange
-linkedin_username:  tracedelange
+linkedin_username:  trace-delange-991067169
 repository: tracedelange/tracedelange.github.io
 permalink: /:year-:month-:day-:title
 google_analytics: 
