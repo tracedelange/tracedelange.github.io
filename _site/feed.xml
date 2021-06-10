@@ -1,24 +1,23 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2021-06-09T18:46:43-05:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">DeLange Development</title><subtitle>Development Log</subtitle><author><name>Trace DeLange</name></author><entry><title type="html">Welcome to the blog, folks</title><link href="http://localhost:4000/2021-06-09-welcome-to-jekyll" rel="alternate" type="text/html" title="Welcome to the blog, folks" /><published>2021-06-09T12:00:00-05:00</published><updated>2021-06-09T12:00:00-05:00</updated><id>http://localhost:4000/welcome-to-jekyll</id><content type="html" xml:base="http://localhost:4000/2021-06-09-welcome-to-jekyll">&lt;h1&gt; Welcome, welcome, welcome &lt;/h1&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2021-06-10T09:43:05-05:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">DeLange Development</title><subtitle>Development Log</subtitle><author><name>Trace DeLange</name></author><entry><title type="html">Welcome to the blog, folks</title><link href="http://localhost:4000/2021-06-09-welcome-to-the-blog" rel="alternate" type="text/html" title="Welcome to the blog, folks" /><published>2021-06-09T12:00:00-05:00</published><updated>2021-06-09T12:00:00-05:00</updated><id>http://localhost:4000/welcome-to-the-blog</id><content type="html" xml:base="http://localhost:4000/2021-06-09-welcome-to-the-blog">&lt;h1&gt; Welcome, welcome, welcome &lt;/h1&gt;
 
 &lt;p&gt;It took a little longer than anticipated, but I am happy to say that I’ve finally committed to building a career in software.&lt;/p&gt;
 
 &lt;p&gt;In order to pursue this goal, I have enrolled in the full-time Software Engineering course offered by &lt;a href=&quot;https://www.coursereport.com/schools/flatiron-school#reviews&quot;&gt;Flatiron School&lt;/a&gt;.
 One of the first things required of students is to create a blog to help document and showcase your work throughout the program and beyond.&lt;/p&gt;
 
-&lt;p&gt;While I do have some experience with software, the majority of it involved data processing in Python. I am under no illusion that this career transition will be any kind of walk in the park - but hey, &lt;i&gt;a smooth sea never made a skilled sailor&lt;/i&gt;, right?&lt;/p&gt;
+&lt;p&gt;While I do have some experience with software, the majority involved data processing in Python, I am under no illusion that this career transition will be any kind of walk in the park - but hey, a smooth sea never made a skilled sailor, right?&lt;/p&gt;
 
-&lt;p&gt;For a long while I was spared the daunting task of
-wading through the swap that is JavaScript, CSS and HTML. My coding existence was composed of pure little Jupyter Lab notebook filled with pandas tables and matplotlib graphs.&lt;/p&gt;
+&lt;p&gt;For a long while I’ve been spared the daunting task of navigating the jungle that is JavaScript, CSS and HTML, except for on the barest peripheries. My coding existence composed of pure little Jupyter Lab notebook filled with pandas tables and matplotlib graphs.&lt;/p&gt;
 
 &lt;p&gt;Alas, all things must come to an end - if I am serious about making a career out of software it’s well past my time to wade into the water and get my feet wet.&lt;/p&gt;
 
 &lt;p&gt;Thankfully for me, though, I have a blog! A blog which will allow me to:&lt;/p&gt;
 
 &lt;ol&gt;
-&lt;li&gt;Provide a informational and referenceable narrative about the developmental processes behind my work&lt;/li&gt;
+&lt;li&gt;Provide an informational and referenceable narrative about the developmental processes behind my work&lt;/li&gt;
 &lt;li&gt;Demonstrate my knowledge and proof of knowledge to fellow developers, colleagues and potential employers&lt;/li&gt;
 &lt;li&gt;Let my inevitable frustration out in a productive and controlled way!&lt;/li&gt;
 &lt;li&gt;(Hopefully!) Provide some inspiration for someone out there exploring some cool idea.&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;p&gt;If I can do it, anybody can!&lt;/p&gt;</content><author><name>Trace DeLange</name></author><category term="update" /><summary type="html">Welcome, welcome, welcome</summary></entry></feed>
+&lt;p&gt;If I can do it, anybody can. Let’s get to work.&lt;/p&gt;</content><author><name>Trace DeLange</name></author><category term="announcement" /><summary type="html">Welcome, welcome, welcome</summary></entry></feed>

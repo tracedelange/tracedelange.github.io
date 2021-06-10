@@ -349,3 +349,7 @@ ul.fa-ul li a i { background: #212529; color: #fff; width: 40px; height: 40px; b
 .site-footer-owner { display: block; font-weight: bold; }
 
 .site-footer-credits { color: #819198; }
+
+#profile-pic { display: block; max-height: 600px; width: auto; height: auto; }
+
+.post-content p img { display: block; width: 50%; margin-left: auto; margin-right: auto; }
