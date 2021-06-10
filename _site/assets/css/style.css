@@ -353,3 +353,5 @@ ul.fa-ul li a i { background: #212529; color: #fff; width: 40px; height: 40px; b
 #profile-pic { display: block; max-height: 600px; width: auto; height: auto; }
 
 .post-content p img { display: block; width: 50%; margin-left: auto; margin-right: auto; }
+
+#page-header-colorable { background-image: linear-gradient(0deg, #1D6CA1, #CA8AFF); }
