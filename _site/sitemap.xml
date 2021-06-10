@@ -8,10 +8,16 @@
 <loc>http://localhost:4000/404</loc>
 </url>
 <url>
+<loc>http://localhost:4000/aboutMe/</loc>
+</url>
+<url>
 <loc>http://localhost:4000/about/</loc>
 </url>
 <url>
 <loc>http://localhost:4000/tag/coding</loc>
+</url>
+<url>
+<loc>http://localhost:4000/about/</loc>
 </url>
 <url>
 <loc>http://localhost:4000/</loc>
