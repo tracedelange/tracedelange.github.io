@@ -8,7 +8,7 @@ published: true
 
 # Welcome back, folks
 
-This post is meant to showcase a project that I recently wrapped up - A business analytics tool meant to display and glean insights from fictitious sales-reports generated in python. If you want to check out the README for the project, you can find it [here](https://github.com/tracedelange/sales-console#readme). 
+This post is meant to showcase a project that I recently wrapped up - A business analytics tool meant to display and glean insights from fictitious sales-reports generated in python. If you want to check out the README for the project, you can find it [here](https://github.com/tracedelange/sales-console#readme). If you'd like to look at the demo for the site, you can check it out [here](https://sales-console-demo.herokuapp.com/customers).
 
 The project boils down to three main components:
  - A python script which reads in data from two text files, takes a few parameters from the user, and spits out a JSON file containing a factitious company, CEO, customers, products, and one year worth of time-stamped product orders by each customer.
@@ -152,7 +152,7 @@ I think that it would be exciting to continue building upon this project and get
 
 As of now, I think I am going to let this project rest for some time. I'm starting to see sales-data in my dreams and there are some other topics that I'd like to explore. 
 
-As always, thank you very much for taking the time to read. If you want to check this project out on GitHub, you can find the repo [here](https://github.com/tracedelange/sales-console)
+As always, thank you very much for taking the time to read. If you want to check this project out on GitHub, you can find the repo [here](https://github.com/tracedelange/sales-console) and if you want to check out the live demo, you can find it [here](https://sales-console-demo.herokuapp.com/customers)
 
 If you have any comments, questions or just want to chat, you can reach me at tracedelange@me.com
 
