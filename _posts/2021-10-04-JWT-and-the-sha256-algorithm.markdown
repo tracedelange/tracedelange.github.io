@@ -1,0 +1,32 @@
+---
+layout: post
+title:  "JWT and the SHA-256 Algorithm"
+date:   2021-10-04 12:00:00 -0500
+categories: security javascript
+published: true
+---
+
+# Welcome back folks
+
+I was recently working on a project that required user authentication. My initial thought was to go with the straight-forward session-based authentication provided by rails. This worked great in development, but during production I quickly ran into issues regarding [Chrome blocking cookies](https://duo.com/decipher/google-rolls-out-samesite-cookie-changes-to-chrome) from third-party sources that didn't contain the correct SameSite configuration. For chrome to allow third-party cookies, they need to be explicitly labeled with `SameSite=None; Secure` headers to be allowed through from the server to the local client. Configuring these headers can be a real headache, and considering the abstracted nature of working with Rails, it's not always clear what (and where) needs to be configured correctly to get the desired results. I was able to find a couple of solutions to this problem, such as [explicitly stating cookie configurations in an initializing file](https://www.skcript.com/svr/samesite-issue-with-rails-in-chrome/), installing a gem to [handle SameSite configuration automatically](https://github.com/pschinis/rails_same_site_cookie), or even [disabling Chromes security features all together](https://trinitytuts.com/fix-samesite-cookie-issue-in-chrome-browser/). 
+
+While I'm sure many of these solutions have worked for others, none worked for my project. Given another week of banging my head on my keyboard I'm sure I would have been able to work out the bugs, but I decided that this was a good time to try something new.
+
+## Enter JWT & SHA-256
+
+JWT stands for JSON Web Token, which is a means of facilitating secure authorization between two parties using cryptographic algorithms. In practice, it is very similar to a whispered password that is given to the client, which is then contained in every subsequent message back to the server. This is essentially how every form of authorization works, but the interesting thing about JWT is the different forms of encryption that can be used - the most common of which is known as `HS256` which is a version of the very famous, popular, and robust SHA-256 algorithm. The SHA-256 algorithm is a hashing function. Just like the default Rails encryption library `bcrypt`, SHA-256 acts to 'digest' input values and return a scrambled version of the data which is unrecognizable from the input data or even random noise. The key characteristic that differentiates encryption algorithms from hash functions, is that hash functions have no way to return to the original data after the input has been digested. Whereas an encrypted file may possess some key to return the original input, the (ideal) result of a hash function is to return an unrecognizable and irreversible digest of the original input. 
+
+But how is that useful? If you can't determine the value of a digest, how are you able to determine if the data is authentic? The answer is simple. Our security system doesn't need to know the password at all, in fact, storing passwords in plain text is not only extremely risky, but an extremely high amount of responsibility. The solution to this problem is to simply store the ***hash value*** or ***digest***, of the password. That way, even if your database is compromised, the attackers have no way to determine the original value of the digest. For example, if you need to authenticate a user’s password, you can simply store the digest of their password when they sign up. On login, you take the input of their password and run it through your hash function, if the digest that appears matches the one on file, the correct password has been entered.
+
+Hash functions in general are very powerful tools for storing digested data, but there are drawbacks. If your hash function isn't complex enough, there is a chance (although usually very small), that two separate inputs could produce the same digested output. There are a few ways to mitigate this risk, SHA-256 mostly relies upon the fact that the potential number of outputs to the algorithm can output is incomprehensibly large. 
+
+Another critical characteristic of the SHA-256 function, along with most other hashing functions, is that no matter what amount of data that is fed into the function, it will return a digest that is 256 bits long. Regardless of a 10kb text file or a 65gb HD movie, a single string of 256 characters will be returned. If even a single piece of data is changed in either of those files, an entirely new and unrecognizable digest will be returned. The digest is always 256 bits long, there are two possible characters for each bit (0 or 1), so there is approximately 2^256 or ~10^77 possible combinations which the SHA-256 function can produce. According to the Museum of Liverpool, there are between 10^78 to 10^82 atoms in the observable universe. In theory, there should never be two values that produce the same hash value, and there should never be a method to determine the input of a hash value based solely on the output of the value.
+
+This is the backbone of the security that libraries like JWT offer. When a client logs into a website, the server will issue the client a securely generated token based on the SHA-256 function and pass it back to the client. From there, it's up to the client to make sure to pass that request on with every subsequent request made to the server. When the server receives a token along with information about who the supposed client is, it can run a check to determine if the token matches the one earlier issued. If it does, the server can return sensitive data with confidence in the identity of the client.
+
+If you want to learn more about the SHA-256 function I would highly recommend checking out [this video](https://www.youtube.com/watch?v=S9JGmA5_unY) which talks about some of the characteristics that I discussed today. The YouTube channel [Computerphile](https://www.youtube.com/watch?v=b4b8ktEV4Bg) also has several great videos that cover various topics relating to cryptography among every other facet of computer science, I can't recommend them enough. 
+
+As always, thanks for reading.
+
+7e14c3d7dd12bbd0947aa8cb491dff154a1644a85848fc28bd1997ef9ef54a2a
+(Trace)

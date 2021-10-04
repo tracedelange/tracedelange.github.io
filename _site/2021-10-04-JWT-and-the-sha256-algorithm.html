@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+  <head>
+  <meta charset="UTF-8">
+
+  <!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>JWT and the SHA-256 Algorithm | DeLange Development</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="JWT and the SHA-256 Algorithm" />
+<meta name="author" content="Trace DeLange" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Welcome back folks" />
+<meta property="og:description" content="Welcome back folks" />
+<link rel="canonical" href="http://localhost:4000/2021-10-04-JWT-and-the-sha256-algorithm" />
+<meta property="og:url" content="http://localhost:4000/2021-10-04-JWT-and-the-sha256-algorithm" />
+<meta property="og:site_name" content="DeLange Development" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-10-04T12:00:00-05:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="JWT and the SHA-256 Algorithm" />
+<script type="application/ld+json">
+{"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/logo.png"},"name":"Trace DeLange"},"author":{"@type":"Person","name":"Trace DeLange"},"datePublished":"2021-10-04T12:00:00-05:00","url":"http://localhost:4000/2021-10-04-JWT-and-the-sha256-algorithm","description":"Welcome back folks","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2021-10-04-JWT-and-the-sha256-algorithm"},"headline":"JWT and the SHA-256 Algorithm","dateModified":"2021-10-04T12:00:00-05:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#157878">
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="/assets/css/style.css?v=8723bf870e0f619ba1df9d81baae7822209ed511">
+  <link rel="shortcut icon" href="/assets/favicon.png">
+  <script src="https://use.fontawesome.com/9f9cb26d6f.js"></script>
+
+  
+
+  
+    
+
+
+
+
+
+  
+
+</head>
+  <body>
+    <div class="nav">
+  <!-- <a class="logo"></a> -->
+  <ul class="navbar-nav">
+    <li><a href="/">Home</a></li>
+    <li><a href="/about">About</a></li>
+  </ul>
+</div>
+<section class="page-header" id="page-header-colorable">
+  
+    <h1 class="project-name">JWT and the SHA-256 Algorithm</h1>
+     
+  
+  
+</section>
+    <section class="main-content">
+      <article class="post">
+
+  <header class="post-header">
+    <p class="post-meta">
+      <time datetime="2021-10-04T12:00:00-05:00" itemprop="datePublished">
+        
+        Oct 4, 2021
+      </time>
+      
+      <span>
+        
+      </span>  
+    </p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <h1 id="welcome-back-folks">Welcome back folks</h1>
+
+<p>I was recently working on a project that required user authentication. My initial thought was to go with the straight-forward session-based authentication provided by rails. This worked great in development, but during production I quickly ran into issues regarding <a href="https://duo.com/decipher/google-rolls-out-samesite-cookie-changes-to-chrome">Chrome blocking cookies</a> from third-party sources that didn’t contain the correct SameSite configuration. For chrome to allow third-party cookies, they need to be explicitly labeled with <code class="language-plaintext highlighter-rouge">SameSite=None; Secure</code> headers to be allowed through from the server to the local client. Configuring these headers can be a real headache, and considering the abstracted nature of working with Rails, it’s not always clear what (and where) needs to be configured correctly to get the desired results. I was able to find a couple of solutions to this problem, such as <a href="https://www.skcript.com/svr/samesite-issue-with-rails-in-chrome/">explicitly stating cookie configurations in an initializing file</a>, installing a gem to <a href="https://github.com/pschinis/rails_same_site_cookie">handle SameSite configuration automatically</a>, or even <a href="https://trinitytuts.com/fix-samesite-cookie-issue-in-chrome-browser/">disabling Chromes security features all together</a>.</p>
+
+<p>While I’m sure many of these solutions have worked for others, none worked for my project. Given another week of banging my head on my keyboard I’m sure I would have been able to work out the bugs, but I decided that this was a good time to try something new.</p>
+
+<h2 id="enter-jwt--sha-256">Enter JWT &amp; SHA-256</h2>
+
+<p>JWT stands for JSON Web Token, which is a means of facilitating secure authorization between two parties using cryptographic algorithms. In practice, it is very similar to a whispered password that is given to the client, which is then contained in every subsequent message back to the server. This is essentially how every form of authorization works, but the interesting thing about JWT is the different forms of encryption that can be used - the most common of which is known as <code class="language-plaintext highlighter-rouge">HS256</code> which is a version of the very famous, popular, and robust SHA-256 algorithm. The SHA-256 algorithm is a hashing function. Just like the default Rails encryption library <code class="language-plaintext highlighter-rouge">bcrypt</code>, SHA-256 acts to ‘digest’ input values and return a scrambled version of the data which is unrecognizable from the input data or even random noise. The key characteristic that differentiates encryption algorithms from hash functions, is that hash functions have no way to return to the original data after the input has been digested. Whereas an encrypted file may possess some key to return the original input, the (ideal) result of a hash function is to return an unrecognizable and irreversible digest of the original input.</p>
+
+<p>But how is that useful? If you can’t determine the value of a digest, how are you able to determine if the data is authentic? The answer is simple. Our security system doesn’t need to know the password at all, in fact, storing passwords in plain text is not only extremely risky, but an extremely high amount of responsibility. The solution to this problem is to simply store the <strong><em>hash value</em></strong> or <strong><em>digest</em></strong>, of the password. That way, even if your database is compromised, the attackers have no way to determine the original value of the digest. For example, if you need to authenticate a user’s password, you can simply store the digest of their password when they sign up. On login, you take the input of their password and run it through your hash function, if the digest that appears matches the one on file, the correct password has been entered.</p>
+
+<p>Hash functions in general are very powerful tools for storing digested data, but there are drawbacks. If your hash function isn’t complex enough, there is a chance (although usually very small), that two separate inputs could produce the same digested output. There are a few ways to mitigate this risk, SHA-256 mostly relies upon the fact that the potential number of outputs to the algorithm can output is incomprehensibly large.</p>
+
+<p>Another critical characteristic of the SHA-256 function, along with most other hashing functions, is that no matter what amount of data that is fed into the function, it will return a digest that is 256 bits long. Regardless of a 10kb text file or a 65gb HD movie, a single string of 256 characters will be returned. If even a single piece of data is changed in either of those files, an entirely new and unrecognizable digest will be returned. The digest is always 256 bits long, there are two possible characters for each bit (0 or 1), so there is approximately 2^256 or ~10^77 possible combinations which the SHA-256 function can produce. According to the Museum of Liverpool, there are between 10^78 to 10^82 atoms in the observable universe. In theory, there should never be two values that produce the same hash value, and there should never be a method to determine the input of a hash value based solely on the output of the value.</p>
+
+<p>This is the backbone of the security that libraries like JWT offer. When a client logs into a website, the server will issue the client a securely generated token based on the SHA-256 function and pass it back to the client. From there, it’s up to the client to make sure to pass that request on with every subsequent request made to the server. When the server receives a token along with information about who the supposed client is, it can run a check to determine if the token matches the one earlier issued. If it does, the server can return sensitive data with confidence in the identity of the client.</p>
+
+<p>If you want to learn more about the SHA-256 function I would highly recommend checking out <a href="https://www.youtube.com/watch?v=S9JGmA5_unY">this video</a> which talks about some of the characteristics that I discussed today. The YouTube channel <a href="https://www.youtube.com/watch?v=b4b8ktEV4Bg">Computerphile</a> also has several great videos that cover various topics relating to cryptography among every other facet of computer science, I can’t recommend them enough.</p>
+
+<p>As always, thanks for reading.</p>
+
+<p>7e14c3d7dd12bbd0947aa8cb491dff154a1644a85848fc28bd1997ef9ef54a2a
+(Trace)</p>
+
+  </div>
+
+  <br/>
+
+</article>
+
+<div class="relatedPosts">
+  <h2>Related Posts</h2>
+    
+
+    <ul>
+      
+      
+        
+        
+      
+        
+        
+      
+        
+        
+      
+        
+        
+      
+        
+        
+      
+    
+      
+      
+        
+          
+    
+          
+          
+          
+            
+            <li>
+              <h3>
+                <a href="http://localhost:4000/2021-09-05-data-scraping-and-displaying-with-sinatra">
+                  Using Sinatra to Display Data Scraped From Twitter
+                </a>
+              </h3>
+            </li>
+          
+        
+          
+    
+          
+          
+          
+            
+            <li>
+              <h3>
+                <a href="http://localhost:4000/2021-07-28-sales-console">
+                  Building the Sales-Console
+                </a>
+              </h3>
+            </li>
+          
+        
+          
+    
+          
+          
+          
+            
+            <li>
+              <h3>
+                <a href="http://localhost:4000/2021-06-30-digital-tidepool">
+                  Building the Digital Tidepool
+                </a>
+              </h3>
+            </li>
+          
+        
+          
+            
+      
+    </ul>
+</div>
+
+
+      <footer class="site-footer">
+  <ul class="fa-ul">
+    
+      <li>
+        <a href="https://github.com/tracedelange" target="_blank">
+          <i class="fa fa-github-square" aria-hidden="true"></i>
+        </a>
+      </li>
+    
+    
+    <li>
+      <a href="https://linkedin.com/in/trace-delange-991067169" target="_blank">
+        <i class="fa fa-linkedin-square" aria-hidden="true"></i>
+      </a>
+    </li>
+    
+  </ul>
+  <span class="site-footer-credits">Copyright © 2021 Trace DeLange</span>
+</footer>
+    </section>
+  </body>
+</html>
