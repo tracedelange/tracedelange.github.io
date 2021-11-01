@@ -1,9 +1,9 @@
 ---
 layout: post
-date:   2021-06-10 12:00:00 -0500
+date:   2021-11-01 12:00:00 -0500
 title:  "Modeling The Travelling Salesman Problem"
 categories: python
-published: false
+published: true
 tags: python np-hard
 ---
 
@@ -63,7 +63,7 @@ graph_cities(coordinates)
 
 We can think of the graph above as a map. Our ultimate goal is to determine the fastest route that allows us to stop at each once. 
 
-For us humans, it's not that challenging of a problem. We can easily see that the fastest route would be to start at either the left side and work to the right, or start at the right side and work to the left. Keep in mind there is no distinguishment from travlling a route forwards or backwards, these two solutions are equal and therefore are counted as one. 
+For us humans, it's not that challenging of a problem. We can easily see that the fastest route would be to start at either the left side and work to the right, or start at the right side and work to the left. Keep in mind when traveling a route forwards or backwards on a particular route, the solutions are equal and therefore are counted as a single solution. 
 
 If we were to define the solution to this problem by hand, we could do so by creating a list of coordinate points that we want to visit in a row:
 {% highlight python %}
@@ -210,7 +210,7 @@ Shortest solution length: 93.39
 ![Solved with best route](/assets/post_images/opt_w_dist.png)
 ![solved with worst route](/assets/post_images/lest_w_dist.png)
  
-For an inital input of 5 cities, it took my computer about a millisecond to determine the fastest and shortest routes from a total of 60 unique paths. 
+For an initial input of 5 cities, it took my computer about a millisecond to determine the fastest and shortest routes from a total of 60 unique paths. 
 
 Now that we have a good show of things, let's scale it up!
 
@@ -233,6 +233,23 @@ Shortest solution length: 191.81
 Now things are getting interesting... We only increased our number of cities by four, yet our processing time increased to about four seconds, aka <b> five-thousands times longer</b> than it took to calculate our solution for a five city map. Additionally, the number of potential solutions to calculate increased by a factor of 3024 from 60 routes to 181,440 routes.
 
 Since we're working with permutations, things are getting out of hand pretty quick
+
+With just 20 routes, the number of possible solutions jumps to roughly 60,822,550,204,416,000 solutions.
+
+According to <a href='https://www.liverpoolmuseums.org.uk/stories/which-greater-number-of-atoms-universe-or-number-of-chess-moves'>Liverpool Museums,</a> there are between 10^78 to 10^82 in the observable universe.
+
+Stated another way, there are more possible solutions to the travelling salesman problem given 62 cities than there are atoms in the observable universe. That's a lot of possible solutions. Way too many, actually.
+
+But what if we want to solve a problem like this? It's not hard to imagine a delivery driver completing 62 stops in a day, and it's unlikely the average delivery company has access to supercomputers capable of crunching trillions of calculations every second. 
+
+One solution to this problem is to add a margin of error. Obviously the optimal solution would be nice, but if you could trade a large portion of processing time for a small margin of error, you can cut down on processing time immensely. This is where <a href='https://en.wikipedia.org/wiki/Heuristic_(computer_science)'>Heuristics</a> come into play, functions or algorithms that are "close enough". These processes trade a small portion of accuracy for huge payouts in processing speed. It depends on the organization and the problem, but for many use cases a solution that is 95% accurate on demand right now is a lot more valuable than a solution that is 100% accurate in an hour, a day or even a year from now (rocket launches withstanding). 
+
+Heuristics come in many different shapes and forms, and there are some that work much better than others. Again, it all depends on the use case and requirements of the solution. For a simple and fast approximation, you might use a <a href='https://en.wikipedia.org/wiki/Nearest_neighbor_search'>nearest neighbor search</a> to approximate the fastest route through the problem. As a once Biologist, my personal favorite is the <a>genetic algorithm</a>, which evaluates each solution in terms of survival of the fittest, reproducing and recombining those solutions which outperform others. 
+
+In a future blog post, I will outline how I've managed to implement a genetic algorithm written from scratch designed to approximate solutions to the Travelling Salesman problem. 
+
+For the time being, I've put together a small Webapp to demonstrate the exponential complexity of the problem, which you can <a href='https://tsp-frontend-react.herokuapp.com/'>visit here.</a>
+
 
 
 <!-- {% highlight python %}

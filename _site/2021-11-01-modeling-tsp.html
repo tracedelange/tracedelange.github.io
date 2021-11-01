@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+  <head>
+  <meta charset="UTF-8">
+
+  <!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Modeling The Travelling Salesman Problem | DeLange Development</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Modeling The Travelling Salesman Problem" />
+<meta name="author" content="Trace DeLange" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Let’s take a trip, shall we?" />
+<meta property="og:description" content="Let’s take a trip, shall we?" />
+<link rel="canonical" href="http://localhost:4000/2021-11-01-modeling-tsp" />
+<meta property="og:url" content="http://localhost:4000/2021-11-01-modeling-tsp" />
+<meta property="og:site_name" content="DeLange Development" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-11-01T12:00:00-05:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Modeling The Travelling Salesman Problem" />
+<script type="application/ld+json">
+{"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/logo.png"},"name":"Trace DeLange"},"author":{"@type":"Person","name":"Trace DeLange"},"datePublished":"2021-11-01T12:00:00-05:00","url":"http://localhost:4000/2021-11-01-modeling-tsp","description":"Let’s take a trip, shall we?","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2021-11-01-modeling-tsp"},"headline":"Modeling The Travelling Salesman Problem","dateModified":"2021-11-01T12:00:00-05:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#157878">
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="/assets/css/style.css?v=5536b1fb301a7f2243df26454e3943dc3cdda655">
+  <link rel="shortcut icon" href="/assets/favicon.png">
+  <script src="https://use.fontawesome.com/9f9cb26d6f.js"></script>
+
+  
+
+  
+    
+
+
+
+
+
+  
+
+</head>
+  <body>
+    <div class="nav">
+  <!-- <a class="logo"></a> -->
+  <ul class="navbar-nav">
+    <li><a href="/">Home</a></li>
+    <li><a href="/about">About</a></li>
+  </ul>
+</div>
+<section class="page-header" id="page-header-colorable">
+  
+    <h1 class="project-name">Modeling The Travelling Salesman Problem</h1>
+     
+  
+  
+</section>
+    <section class="main-content">
+      <article class="post">
+
+  <header class="post-header">
+    <p class="post-meta">
+      <time datetime="2021-11-01T12:00:00-05:00" itemprop="datePublished">
+        
+        Nov 1, 2021
+      </time>
+      
+      <span>
+        
+          
+          <a href="/tag/python"><code class="highligher-rouge"><nobr>#python</nobr></code></a>
+        
+          
+          <a href="/tag/np-hard"><code class="highligher-rouge"><nobr>#np-hard</nobr></code></a>
+        
+      </span>  
+    </p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <h1 id="lets-take-a-trip-shall-we">Let’s take a trip, shall we?</h1>
+
+<p>The <a href="https://en.wikipedia.org/wiki/Travelling_salesman_problem">Travelling Salesman Problem</a> is a classic <a href="https://en.wikipedia.org/wiki/NP-hardness">NP-Hard</a> problem that involves determining the shortest traveling route through a given list of cities.</p>
+
+<p>I’m not the first to explore this problem by a long shot - but I do think that there is a lot to learn from playing around with it. Mainly, I’ve found that exploring this problem has given me a much better understanding of some of the strengths and weaknesses of computation. Here I am going to walk through how I modeled this problem. In the future, I’ll build upon this to explain how I implemented some interesting solutions to the problem. For starters, let’s tackle the issue with brute force until we start running into road blocks.</p>
+
+<p>To define the problem, we need to do two things:</p>
+<ol>
+  <li>Generate a list of N cities which will be represented by a pair of X,Y coordinates</li>
+  <li>Graph each point to visualize our ‘map’ of the cities</li>
+</ol>
+
+<p>For the first step, a simple function to generate (X,Y) coordinates based on a given number of cities and return a list of those cities will work:</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">generate_cities</span><span class="p">(</span><span class="n">n_cities</span><span class="p">):</span>
+    <span class="n">coordinates</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_cities</span><span class="p">):</span>
+        <span class="n">coordinates</span><span class="p">.</span><span class="n">append</span><span class="p">((</span><span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">100</span><span class="p">),</span> <span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">100</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">coordinates</span></code></pre></figure>
+
+<p>Using our function we can generate a set of coordinates like so:</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">coordinates</span> <span class="o">=</span> <span class="n">generate_cities</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="n">coordinates</span>
+<span class="p">[(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">46</span><span class="p">),</span> <span class="p">(</span><span class="mi">88</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span> <span class="p">(</span><span class="mi">77</span><span class="p">,</span> <span class="mi">42</span><span class="p">),</span> <span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="mi">61</span><span class="p">),</span> <span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">54</span><span class="p">)]</span></code></pre></figure>
+
+<p>Graphing the cities is a simple matter of splitting the coordinates into lists of X, Y values and calling a matplotlib plot to get an abstracted birds eye view of our cities:</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">graph_cities</span><span class="p">(</span><span class="n">coordinates</span><span class="p">):</span>
+
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="p">[(</span><span class="n">coordinate</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">coordinates</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">coordinate</span> <span class="ow">in</span> <span class="n">coordinates</span><span class="p">])</span>
+ 
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">7.5</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
+    <span class="n">ax</span><span class="p">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s">'o'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">'black'</span><span class="p">);</span>
+    <span class="n">ax</span><span class="p">.</span><span class="n">axis</span><span class="p">(</span><span class="s">'equal'</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="p">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">plt</span><span class="p">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">100</span><span class="p">)</span>
+    
+    <span class="n">fig</span><span class="p">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span>
+
+<span class="n">graph_cities</span><span class="p">(</span><span class="n">coordinates</span><span class="p">)</span></code></pre></figure>
+
+<p><img src="/assets/post_images/coordinates.png" alt="Coordinates" /></p>
+
+<p>We can think of the graph above as a map. Our ultimate goal is to determine the fastest route that allows us to stop at each once.</p>
+
+<p>For us humans, it’s not that challenging of a problem. We can easily see that the fastest route would be to start at either the left side and work to the right, or start at the right side and work to the left. Keep in mind when traveling a route forwards or backwards on a particular route, the solutions are equal and therefore are counted as a single solution.</p>
+
+<p>If we were to define the solution to this problem by hand, we could do so by creating a list of coordinate points that we want to visit in a row:</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">solution</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">46</span><span class="p">),</span> <span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">54</span><span class="p">),</span> <span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="mi">61</span><span class="p">),</span> <span class="p">(</span><span class="mi">77</span><span class="p">,</span> <span class="mi">42</span><span class="p">),</span> <span class="p">(</span><span class="mi">88</span><span class="p">,</span> <span class="mi">32</span><span class="p">)]</span></code></pre></figure>
+
+<p>We can graph this solution by taking our map from before and drawing lines to connect the cities in the order of appearance in our solution list:</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">connectpoints</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span><span class="n">x1</span><span class="p">,</span><span class="n">y1</span><span class="p">,</span><span class="n">x2</span><span class="p">,</span><span class="n">y2</span><span class="p">):</span>
+    <span class="n">ax</span><span class="p">.</span><span class="n">plot</span><span class="p">([</span><span class="n">x1</span><span class="p">,</span><span class="n">x2</span><span class="p">],[</span><span class="n">y1</span><span class="p">,</span><span class="n">y2</span><span class="p">],</span><span class="s">'r-'</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">graph_route</span><span class="p">(</span><span class="n">coordinates</span><span class="p">,</span> <span class="n">route</span><span class="p">):</span>
+
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="p">[(</span><span class="n">coordinate</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">coordinates</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">coordinate</span> <span class="ow">in</span> <span class="n">coordinates</span><span class="p">])</span>
+    
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">7.5</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
+
+    <span class="n">ax</span><span class="p">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s">'o'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">'black'</span><span class="p">);</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">route</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">connectpoints</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">route</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="n">route</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="n">route</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="n">route</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">continue</span>
+    
+    <span class="n">plt</span><span class="p">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">plt</span><span class="p">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">100</span><span class="p">)</span>
+
+    <span class="n">fig</span><span class="p">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span>
+
+<span class="n">graph_route</span><span class="p">(</span><span class="n">coordinates</span><span class="p">,</span> <span class="n">solution</span><span class="p">)</span></code></pre></figure>
+
+<p><img src="/assets/post_images/coordinates_with_solution.png" alt="Coordinates with Solution" /></p>
+
+<p>Easy peasy! Humans rock. But we don’t write code just so we can solve the problem ourselves, lets automate this process.</p>
+
+<p>Our solution algorithm can be broken down into four steps:</p>
+
+<ol>
+<li>Given a list of city coordinates, create a list of each possible permutation of the points</li>
+<li>Iterate over the list of permutations and determine if any given route is an inverse of any previous solution, if not, append the route to a list of potential solutions</li>
+<li>Iterate over each potential solution and calculate the total distance travelled by the route</li>
+<li>Return the route with the shortest total distance, and since we calculated it, return the route with the <b>longest</b> route as well. </li>
+</ol>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">get_distance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span><span class="n">y1</span><span class="p">,</span><span class="n">x2</span><span class="p">,</span><span class="n">y2</span><span class="p">):</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">math</span><span class="p">.</span><span class="n">hypot</span><span class="p">(</span><span class="n">x2</span><span class="o">-</span><span class="n">x1</span><span class="p">,</span> <span class="n">y2</span><span class="o">-</span><span class="n">y1</span><span class="p">),</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">d</span>
+
+
+<span class="k">def</span> <span class="nf">exact_solution</span><span class="p">(</span><span class="n">coordinates</span><span class="p">):</span>
+    
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="p">[(</span><span class="n">coordinate</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">coordinates</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">coordinate</span> <span class="ow">in</span> <span class="n">coordinates</span><span class="p">])</span>
+    
+    <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="p">.</span><span class="n">process_time</span><span class="p">()</span>
+
+    <span class="c1">#1 Generate a list of all possible combinations of routes
+</span>    <span class="n">combs</span> <span class="o">=</span> <span class="n">itertools</span><span class="p">.</span><span class="n">permutations</span><span class="p">(</span><span class="n">coordinates</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">coordinates</span><span class="p">))</span>
+
+    <span class="c1">#2 Iterate through the combinations and append each uniquie route to 'routes'.
+</span>    <span class="c1">#Routes that are identical forward and backwards are removed since they are equal in distance. 
+</span>    <span class="n">routes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">combs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">p</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">routes</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
+
+
+    <span class="c1">#3 For each unique route, calculate the total distance of the route
+</span>    <span class="c1">#by summing the distances between each constituent legs of the route
+</span>    <span class="k">for</span> <span class="n">route</span> <span class="ow">in</span> <span class="n">routes</span><span class="p">:</span>
+        <span class="n">distance</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">route</span><span class="p">)):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">d</span> <span class="o">=</span> <span class="n">get_distance</span><span class="p">(</span><span class="n">route</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">route</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="n">route</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">route</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">distance</span> <span class="o">=</span> <span class="n">distance</span> <span class="o">+</span> <span class="n">d</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">route</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">distance</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+                <span class="k">continue</span>
+
+    <span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="p">.</span><span class="n">process_time</span><span class="p">()</span>
+    <span class="n">path_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">routes</span><span class="p">)</span>
+    <span class="n">process_time</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">end</span><span class="o">-</span><span class="n">start</span><span class="p">)</span>
+    
+    <span class="c1">#4 Identify the path of shortest and longest distance
+</span>    <span class="n">optimum</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">routes</span><span class="p">,</span> <span class="n">key</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">t</span><span class="p">[(</span><span class="nb">len</span><span class="p">(</span><span class="n">routes</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">-</span><span class="mi">1</span><span class="p">)])</span>
+    <span class="n">worst</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">routes</span><span class="p">,</span> <span class="n">key</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">t</span><span class="p">[(</span><span class="nb">len</span><span class="p">(</span><span class="n">routes</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">-</span><span class="mi">1</span><span class="p">)])</span>
+    
+
+        
+    <span class="k">print</span><span class="p">(</span><span class="s">'Processing time to find solution: '</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">process_time</span><span class="p">)</span> <span class="o">+</span> <span class="s">" Seconds"</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">'Number of paths generated: '</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">routes</span><span class="p">)))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">'Longest solution length: '</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">worst</span><span class="p">[(</span><span class="nb">len</span><span class="p">(</span><span class="n">worst</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)]))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">'Shortest solution length: '</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">optimum</span><span class="p">[(</span><span class="nb">len</span><span class="p">(</span><span class="n">worst</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)]))</span>
+
+    <span class="n">graph_route_only</span><span class="p">(</span><span class="n">coordinates</span><span class="p">,</span> <span class="n">optimum</span><span class="p">)</span>
+    <span class="n">plt</span><span class="p">.</span><span class="n">title</span><span class="p">(</span><span class="s">'Optimum Route. Distance: '</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">optimum</span><span class="p">[(</span><span class="nb">len</span><span class="p">(</span><span class="n">worst</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)]))</span>
+    <span class="n">graph_route_only</span><span class="p">(</span><span class="n">coordinates</span><span class="p">,</span> <span class="n">worst</span><span class="p">)</span>
+    <span class="n">plt</span><span class="p">.</span><span class="n">title</span><span class="p">(</span><span class="s">'Least Optimum Route: '</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">worst</span><span class="p">[(</span><span class="nb">len</span><span class="p">(</span><span class="n">worst</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)]))</span>
+
+    <span class="k">return</span> <span class="n">optimum</span><span class="p">,</span> <span class="n">worst</span></code></pre></figure>
+
+<p>There’s a lot going on in the above function. The comments tagged 1-4 follow along with our steps above, everything else is extra information for gathering information about the solving process. In essence, this function will take all the time it needs to brute force search through every possible combination of cities, calculate the distance and return the <b>most</b> opimum solution as well as the <b>least</b> optimum solution.</p>
+
+<p>We can see the result of calling this function on our original set of coordinates:</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">shortest</span><span class="p">,</span> <span class="n">longest</span> <span class="o">=</span> <span class="n">exact_solution</span><span class="p">(</span><span class="n">coordinates</span><span class="p">)</span>
+
+<span class="n">Processing</span> <span class="n">time</span> <span class="n">to</span> <span class="n">find</span> <span class="n">solution</span><span class="p">:</span> <span class="mf">0.0008179999999988752</span> <span class="n">Seconds</span>
+<span class="n">Number</span> <span class="n">of</span> <span class="n">paths</span> <span class="n">generated</span><span class="p">:</span> <span class="mi">60</span>
+<span class="n">Longest</span> <span class="n">solution</span> <span class="n">length</span><span class="p">:</span> <span class="mf">270.55</span>
+<span class="n">Shortest</span> <span class="n">solution</span> <span class="n">length</span><span class="p">:</span> <span class="mf">93.39</span></code></pre></figure>
+
+<p><img src="/assets/post_images/opt_w_dist.png" alt="Solved with best route" />
+<img src="/assets/post_images/lest_w_dist.png" alt="solved with worst route" /></p>
+
+<p>For an initial input of 5 cities, it took my computer about a millisecond to determine the fastest and shortest routes from a total of 60 unique paths.</p>
+
+<p>Now that we have a good show of things, let’s scale it up!</p>
+
+<p>Here we generate a map with nine cities:</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">coordinates</span> <span class="o">=</span> <span class="n">generate_cities</span><span class="p">(</span><span class="mi">9</span><span class="p">)</span>
+
+<span class="n">shortest</span><span class="p">,</span> <span class="n">longest</span> <span class="o">=</span> <span class="n">exact_solution</span><span class="p">(</span><span class="n">coordinates</span><span class="p">)</span>
+
+<span class="n">Processing</span> <span class="n">time</span> <span class="n">to</span> <span class="n">find</span> <span class="n">solution</span><span class="p">:</span> <span class="mf">3.9375920000000004</span> <span class="n">Seconds</span>
+<span class="n">Number</span> <span class="n">of</span> <span class="n">paths</span> <span class="n">generated</span><span class="p">:</span> <span class="mi">181440</span>
+<span class="n">Longest</span> <span class="n">solution</span> <span class="n">length</span><span class="p">:</span> <span class="mf">554.9</span>
+<span class="n">Shortest</span> <span class="n">solution</span> <span class="n">length</span><span class="p">:</span> <span class="mf">191.81</span></code></pre></figure>
+
+<p><img src="/assets/post_images/solved_9.png" alt="Solved with best route" />
+<img src="/assets/post_images/solved_9_bad.png" alt="solved with worst route" /></p>
+
+<p>Now things are getting interesting… We only increased our number of cities by four, yet our processing time increased to about four seconds, aka <b> five-thousands times longer</b> than it took to calculate our solution for a five city map. Additionally, the number of potential solutions to calculate increased by a factor of 3024 from 60 routes to 181,440 routes.</p>
+
+<p>Since we’re working with permutations, things are getting out of hand pretty quick</p>
+
+<p>With just 20 routes, the number of possible solutions jumps to roughly 60,822,550,204,416,000 solutions.</p>
+
+<p>According to <a href="https://www.liverpoolmuseums.org.uk/stories/which-greater-number-of-atoms-universe-or-number-of-chess-moves">Liverpool Museums,</a> there are between 10^78 to 10^82 in the observable universe.</p>
+
+<p>Stated another way, there are more possible solutions to the travelling salesman problem given 62 cities than there are atoms in the observable universe. That’s a lot of possible solutions. Way too many, actually.</p>
+
+<p>But what if we want to solve a problem like this? It’s not hard to imagine a delivery driver completing 62 stops in a day, and it’s unlikely the average delivery company has access to supercomputers capable of crunching trillions of calculations every second.</p>
+
+<p>One solution to this problem is to add a margin of error. Obviously the optimal solution would be nice, but if you could trade a large portion of processing time for a small margin of error, you can cut down on processing time immensely. This is where <a href="https://en.wikipedia.org/wiki/Heuristic_(computer_science)">Heuristics</a> come into play, functions or algorithms that are “close enough”. These processes trade a small portion of accuracy for huge payouts in processing speed. It depends on the organization and the problem, but for many use cases a solution that is 95% accurate on demand right now is a lot more valuable than a solution that is 100% accurate in an hour, a day or even a year from now (rocket launches withstanding).</p>
+
+<p>Heuristics come in many different shapes and forms, and there are some that work much better than others. Again, it all depends on the use case and requirements of the solution. For a simple and fast approximation, you might use a <a href="https://en.wikipedia.org/wiki/Nearest_neighbor_search">nearest neighbor search</a> to approximate the fastest route through the problem. As a once Biologist, my personal favorite is the <a>genetic algorithm</a>, which evaluates each solution in terms of survival of the fittest, reproducing and recombining those solutions which outperform others.</p>
+
+<p>In a future blog post, I will outline how I’ve managed to implement a genetic algorithm written from scratch designed to approximate solutions to the Travelling Salesman problem.</p>
+
+<p>For the time being, I’ve put together a small Webapp to demonstrate the exponential complexity of the problem, which you can <a href="https://tsp-frontend-react.herokuapp.com/">visit here.</a></p>
+
+<!-- 
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="p">(</span><span class="n">math</span><span class="p">.</span><span class="n">factorial</span><span class="p">(</span><span class="n">n_cities</span><span class="p">))</span><span class="o">/</span><span class="mi">2</span>
+
+<span class="k">def</span> <span class="nf">n_routes</span><span class="p">(</span><span class="n">n_cities</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">math</span><span class="p">.</span><span class="n">factorial</span><span class="p">(</span><span class="n">n_cities</span><span class="p">))</span><span class="o">/</span><span class="mi">2</span>
+
+<span class="n">n_routes</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="mi">60</span></code></pre></figure>
+
+
+Sixty solutions isn't bad! It might take us a few minutes to shuffle through all that informatin but our computers can handle that in no time. 
+
+What about 6 cities? What about 8? 10? 12?
+
+Lets try it out:
+
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">n_routes</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+<span class="mi">360</span>
+
+<span class="n">n_routes</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+<span class="mi">20160</span>
+
+<span class="n">n_routes</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="mi">1814400</span>
+
+<span class="n">n_routes</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span>
+<span class="mi">19958400</span>
+
+<span class="n">n_routes</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>
+<span class="mi">239500800</span></code></pre></figure>
+
+
+If you didn't notice, we've got a problem here. Since were working with factorials, our numbers are getting really big really quick. 
+
+If we want our program to determine the fastest route through 11 different cities, it will have to evaluate almost 20 million solutions. If we want to determine the solution for 12 cities, our program will have to evalute just under 240 million solutions.
+
+We may be running into some roadblocks here if we want to find the solution for a number greater than 12 cities and still be around when our program gets done finding the solution.
+
+But what if we wanted to find solution to a problem with 30 cities? 40? Going the normal method, we might be waiting around awhile for the answer. That's the interesting thing about NP-Hard problems, a problem with only 12 solutions can take a computer 20 minutes to deterine the 100% correct solution. 
+
+Theres a suprisingly simple solution to this problem, and I can't imagine a perfectionist would like the answer. In reality, we dont need the 100% correct answer. If we could get 99% of the way there with 1% uncertainty in one millionth the amount of time, that is a tradeoff worth taking every time. This is idea is sometimes refered to as <b>heuristics</b>, basically the idea that we don't really need a 100% accurate answer. Close enough is good enough. If we can accept this, we can start to get tricky with the travelling salesman problem. 
+
+Now that we've got the problem defined, we'll take a look next time at some of the interesting ways to solve it. If you're interested in the code I used here, you can find the repository [here]:(https://github.com/tracedelange/traveling-salesman-problem)
+
+Thanks for reading, I hope you enjoyed.
+
+Trace -->
+
+
+  </div>
+
+  <br/>
+
+</article>
+
+<div class="relatedPosts">
+  <h2>Related Posts</h2>
+    
+
+    <ul>
+      
+      
+        
+        
+      
+        
+        
+      
+        
+        
+      
+        
+        
+      
+        
+        
+      
+        
+        
+      
+    
+      
+      
+        
+          
+    
+          
+          
+          
+            
+            <li>
+              <h3>
+                <a href="http://localhost:4000/2021-10-04-JWT-and-the-sha256-algorithm">
+                  JWT and the SHA-256 Algorithm
+                </a>
+              </h3>
+            </li>
+          
+        
+          
+    
+          
+          
+          
+            
+            <li>
+              <h3>
+                <a href="http://localhost:4000/2021-09-05-data-scraping-and-displaying-with-sinatra">
+                  Using Sinatra to Display Data Scraped From Twitter
+                </a>
+              </h3>
+            </li>
+          
+        
+          
+    
+          
+          
+          
+            
+            <li>
+              <h3>
+                <a href="http://localhost:4000/2021-07-28-sales-console">
+                  Building the Sales-Console
+                </a>
+              </h3>
+            </li>
+          
+        
+          
+            
+      
+    </ul>
+</div>
+
+
+      <footer class="site-footer">
+  <ul class="fa-ul">
+    
+      <li>
+        <a href="https://github.com/tracedelange" target="_blank">
+          <i class="fa fa-github-square" aria-hidden="true"></i>
+        </a>
+      </li>
+    
+    
+    <li>
+      <a href="https://linkedin.com/in/trace-delange-991067169" target="_blank">
+        <i class="fa fa-linkedin-square" aria-hidden="true"></i>
+      </a>
+    </li>
+    
+  </ul>
+  <span class="site-footer-credits">Copyright © 2021 Trace DeLange</span>
+</footer>
+    </section>
+  </body>
+</html>
